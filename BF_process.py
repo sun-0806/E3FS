@@ -4,7 +4,6 @@ import math
 import secrets
 import sys
 
-"""生成布隆过滤器，构建authenticatied索引树，生成陷门"""
 import numpy as np
 
 
@@ -71,9 +70,6 @@ def query_to_BF(Qv, Num_Hmac, BF_len, K):
 
 
 def add_BFs(cnode, m):
-    """
-    构造非叶节点的布隆过滤器
-    """
     parentBF = [0 for _ in range(m)]
     for j in range(m):
         for i in range(len(cnode)):
