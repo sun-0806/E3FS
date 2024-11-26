@@ -191,7 +191,7 @@ for i in range(1):
     file_dir = "E:/medata"
     Flist, FHlist = Read_file(file_dir)
     Flist = Preprocess(Flist)
-    dictionary, X_tfidf = Vect_files(Flist, 10)
+    dictionary, X_tfidf = Vect_files(Flist, 4000)
     P = X_tfidf.toarray()
 
     file_num, dic_size = P.shape
@@ -214,8 +214,8 @@ for i in range(1):
     Omap, Tmap = indexGen(P, gram_set, m, file_num, FHlist, dic_size, dictionary, sk, k1, k2, branch, K, Num_Hmac)
 
     query_keywords = []
-    obj = random.sample(range(10), 2)
-    for i in range(1):
+    obj = random.sample(range(4000), 2)
+    for i in range(2):
         query_keywords.append(dictionary[obj[i]])
     Qv = uniGram_dictionary(e2LSH_family, query_keywords, c)
     traps, sco, rq, update_times = GenTrap(Qv, sk, Omap, m, k1, k2, Num_Hmac, K)
