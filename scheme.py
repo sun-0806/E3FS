@@ -12,9 +12,6 @@ from fuzzy_process import Read_file, Preprocess, Vect_files, gen_e2LSH_family, u
 from genkey import Keygen
 from BF_process import file_to_BF, query_to_BF, HMAC_keys, Vauth_nonleaf, Vauth_leaf
 
-'''
-包括密钥生成，搜索验证协议各部分
-'''
 
 
 class Node:
