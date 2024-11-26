@@ -4,11 +4,6 @@ import numpy as np
 
 
 def Keygen(m):
-    """
-    # 输入参数m，返回密钥sk
-    :param m: 随机矩阵的维度
-    :return: sk=(M1,M2,S)
-    """
     m1 = generate_invertible_matrix(m)
     m2 = generate_invertible_matrix(m)
     S = np.random.randint(0, 2, [m])
