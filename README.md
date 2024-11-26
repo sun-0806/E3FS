@@ -1,3 +1,3 @@
-# E^3FS: Efficient, Secure, and Verifiable Fuzzy Search with Data Updates in Hybrid-Storage Blockchains
+# E^3FS
 
  Run scheme.py to implement a verifiable secure fuzzy multi-keyword search.
