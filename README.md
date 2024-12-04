@@ -32,5 +32,5 @@ Contains the following programs:
 - `ABBT.py`: Program to create an A-BBT for each keyword.
 - `scheme.py`: Program to implementate an E3FS scheme.
 
-The algorithm implementation of the baseline scheme can be found in each algorithm package, such as `VFSA`, `VRMFS`, and `MFS`. All protocols can be directly executed by running `scheme.py`.
+The algorithm implementation of the baseline schemes can be found in each algorithm package, such as `VFSA`, `VRMFS`, and `MFS`. All protocols can be directly executed by running `scheme.py`.
 
