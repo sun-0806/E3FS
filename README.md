@@ -30,7 +30,7 @@ Contains the following programs:
 - `fuzzy_process.py`: Program to read files and create fuzzy keywords.
 - `BF_process.py`: Program to create a forward index for each file.
 - `ABBT.py`: Program to create an A-BBT for each keyword.
-- `scheme.py`: Program to implementate an E3FS scheme.
+- `scheme.py`: Program to implement an E3FS scheme.
 
 The algorithm implementation of the baseline schemes can be found in each algorithm package, such as `VFSA`, `VRMFS`, and `MFS`. All protocols can be directly executed by running `scheme.py`.
 
