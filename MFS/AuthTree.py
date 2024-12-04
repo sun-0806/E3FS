@@ -1,5 +1,26 @@
+import hashlib
+import hmac
+import math
 import random
+
 import numpy as np
+
+
+def removeElements(L1, L2):
+    b = []
+    for item in L1:
+        if item not in L2:
+            b.append(item)
+    return b
+
+
+def hash_to_binary(input_string, length):
+    sha256_hash = hashlib.sha256(input_string.encode()).hexdigest()
+    binary_hash = bin(int(sha256_hash, 16))[2:]
+    if len(binary_hash) > length:
+        return binary_hash[:length]
+    else:
+        return binary_hash.zfill(length)
 
 
 def ASPE(BF, sk, isIndex):
