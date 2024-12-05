@@ -5,7 +5,7 @@
 
 **Operating systems required:** Windows/Linux.
 
-**Software libraries needed:** Python, NumPy, pypbc, sklearn, matplotlib, etc.
+**Software libraries needed:** Python, NumPy, pypbc, sklearn, matplotlib, Solidity, Ethereum, etc.
 
 ## Reproducibility of Experiments
 **Algorithms Implemented in This Package:**
@@ -30,7 +30,8 @@ Contains the following programs:
 - `fuzzy_process.py`: Program to read files and create fuzzy keywords.
 - `BF_process.py`: Program to create a forward index for each file.
 - `ABBT.py`: Program to create an A-BBT for each keyword.
-- `scheme.py`: Program to implement an E3FS scheme.
+- `scheme.py`: Program to implement an E^3FS scheme.
+- `EFS.sol`: Smart contract for E^3FS on-chain verification.
 
 The algorithm implementations of the baseline schemes can be found in each algorithm package, such as `VFSA`, `VRMFS`, and `MFS`. All protocols can be directly executed by running `scheme.py`.
 
