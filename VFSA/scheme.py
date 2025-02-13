@@ -8,7 +8,9 @@ from RSA_signture import to_verify_with_public_key, to_sign
 from MulAcc import keyGen, Acc, Proved_disjoint, Verify_disjoint, process
 from balanceTree import balanceTree
 
-
+'''
+Including key generation, index and trapdoor construction, search and verification protocol parts
+'''
 class Node():
     def __init__(self, value, acc):
         self._value = value
@@ -23,6 +25,7 @@ class Node():
 
 
 def Gen_file_acc(T_set, pk, pairing):
+    '''the accumulator algorithm for verification'''
     acc_list = []
     for Tj in T_set:
         Tj_Zr = process(Tj, pairing)
@@ -32,7 +35,7 @@ def Gen_file_acc(T_set, pk, pairing):
 
 
 def is_match(BF, traps, tags):
-    num = 0  
+    num = 0   # Record the location of the unmatched subtrap
     for trap in traps:
         for twin in trap:
             first = twin[0]
@@ -44,6 +47,9 @@ def is_match(BF, traps, tags):
 
 
 def search(root, traps, tags, disjoint, node, pk, match_ids):
+    '''
+    Search for files from the index tree from the top down
+    '''
     flag = is_match(root._value, traps, tags)
     if flag == -1:
         if root._isleaf == True:
@@ -69,6 +75,9 @@ def search(root, traps, tags, disjoint, node, pk, match_ids):
 
 
 def verify_correctness(node):
+    '''
+    Verify whether the current node is correct iteratively
+    '''
     if node._left != None or node._right != None:
         verify_correctness(node._left)
         verify_correctness(node._right)
@@ -79,6 +88,9 @@ def verify_correctness(node):
 
 
 def verify(disjoint, node, g, pk, signature, pairing):
+    '''
+    the verification method
+    '''
     flag_complete = []
     for temp in disjoint:
         flag1 = Verify_disjoint(temp[4], Acc(process([temp[0]], pairing), pk, pairing), temp[1], temp[2], temp[3],
@@ -90,6 +102,9 @@ def verify(disjoint, node, g, pk, signature, pairing):
 
 
 def indexGen(P, S_set, Num_HMAC, threshold, K, file_num, dic_size, pk, pairing):
+    '''
+    the index generation method
+    '''
     BFs, T_set = file_to_BF(P, S_set, Num_HMAC, threshold, K, file_num, dic_size)
     acc_list = Gen_file_acc(T_set, pk, pairing)
 
@@ -100,6 +115,9 @@ def indexGen(P, S_set, Num_HMAC, threshold, K, file_num, dic_size, pk, pairing):
 
 
 def GenTrap(Qv, K, Num_HMAC, threshold):  
+    '''
+    the trapdoor generation method
+    '''
     traps = []
     tags = []
     for v in Qv:
