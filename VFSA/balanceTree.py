@@ -5,6 +5,9 @@ from MulAcc import Acc, process
 
 
 class Node():
+    '''
+    The node definition of the index tree
+    '''
     def __init__(self, value, acc):
         self._value = value
         self._id = None
@@ -26,6 +29,9 @@ def removeElements(L1, L2):
 
 
 def balanceTree(nodes, size, BFs, acc_list, keyword_id_list, threshold, hash_count, pk, pairing, K):
+    '''
+    the index tree construction method
+    '''
     if size == 1:
         pnode = Node(BFs[nodes[0]], acc_list[nodes[0]])
         pnode._isleaf = True
