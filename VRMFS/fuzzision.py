@@ -171,7 +171,7 @@ def gen_HashVals(e2LSH_family, v, r):
 
 def uniGram_dictionary(e2LSH_family, dictionary, r):
     '''
-    Generate a unigram dictionary with hash values using E2LSH.
+    Generate a unigram dictionary with hash values using LSH.
     :param e2LSH_family: the LSH family
     :param dictionary: keyword set
     :param r: The bucket width parameter
