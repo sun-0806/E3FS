@@ -216,7 +216,7 @@ def verify_complete(node):
 
 def verify_correctness(Ri, Rq, y0, y1, y2):
      '''
-    Verify whether the current result is correctness baesd on HMAC.Ver
+    Verify whether the current result is correct baesd on HMAC.Ver
     :param Ri: the verifiable tags of index
     :param Rq: the verifiable tags of query
     :param y0: the first coefficient for HMAC method
