@@ -9,10 +9,25 @@ from fuzzision import Read_file, Preprocess, Vect_files, gen_e2LSH_family, biGra
 from Genkey import Keygen
 from BF_plain import file_to_BF, query_to_BF, HMAC_keys
 
-
+'''
+Including key generation, index and trapdoor construction, search and verification protocol parts
+'''
 
 
 def indexGen(P, gram_dict, m, file_num, dic_size, sk, k2,K, Num_HMAC):
+    '''
+    The index generation method
+    :param P: TF-IDF matrix representation of file list
+    :param gram_dict: the unigram dictionary of keywords
+    :param m: the length of Bloom Filter
+    :param file_num: the number of files
+    :param dic_size: the number of keywords
+    :param sk: ASPE keys
+    :param k2: PRF key
+    :param K: PRF keys
+    :param Num_Hmac: the number of hash functions
+    :return: Dmap: index set; Bmap: authenticated index set; Cmap: the set of verifiable tags
+    '''
     Dmap = {}
     Bmap = {}
     Cmap = {}
@@ -27,6 +42,16 @@ def indexGen(P, gram_dict, m, file_num, dic_size, sk, k2,K, Num_HMAC):
 
 
 def GenTrap(Qv, sk, BF_len, k2,K,Num_HMAC):
+    '''
+    The trapdoor generation method
+    :param Qv: the unigram dictionary of the query
+    :param sk: ASPE keys
+    :param BF_len: the length of Bloom Filter
+    :param k2: PRF key
+    :param Num_Hmac: the number of hash functions
+    :param K: PRF keys
+    :return: the trapdoors, threshold, verifiable tags, authenticated query vector
+    '''
     BF = query_to_BF(Qv, BF_len,K,Num_HMAC)
     sco = BF.one
     trapdoor = ASPE(BF.bit_array, sk, False)
@@ -35,6 +60,14 @@ def GenTrap(Qv, sk, BF_len, k2,K,Num_HMAC):
 
 
 def search(sco, trap, Dmap, sigma):
+    '''
+    The search method
+    :param sco: the threshold
+    :param Dmap: index set
+    :param trap: the trapdoor
+    :param sigma: the authenticated query vector
+    :return: result set and verifiable object set
+    '''
     R_i, VO_i = [], {}
     for i in range(len(Dmap)):
         flag, y0 = is_match(Dmap[i], trap, sco)
@@ -50,6 +83,13 @@ def search(sco, trap, Dmap, sigma):
 
 
 def is_match(BF, trap1, sco):
+     '''
+    Inner product matching strategy
+    :param BF: the vectors that need to be tested
+    :param trap1: the trapdoor vector
+    :param sco: the threshold
+    :return: -1:match 0:mismatch
+    '''
     sco1 = np.inner(BF, trap1)
     sco1 = np.array(sco1).flatten()[0]
     if math.fabs(sco - sco1) <= 0.1:
@@ -58,6 +98,14 @@ def is_match(BF, trap1, sco):
 
 
 def tag_compute(BF, sigma_D, trap1, trap2):
+    '''
+    The HMAC.Eval method
+    :param BF: index vector
+    :param sigma_D: authenticated index vector
+    :param trap1: query vector
+    :param trap2: authenticated query vector
+    :return: verifiable tags
+    '''
     if isinstance(BF, np.matrix):
         BF = np.array(BF).flatten()
     if isinstance(sigma_D, np.matrix):
@@ -73,6 +121,15 @@ def tag_compute(BF, sigma_D, trap1, trap2):
 
 
 def verify_correctness(Ri, Rq, y0, y1, y2):
+    '''
+    Verify whether the current result is correctness baesd on HMAC.Ver
+    :param Ri: the verifiable tags of index
+    :param Rq: the verifiable tags of query
+    :param y0: the first coefficient for HMAC method
+    :param y1: the second coefficient for HMAC method
+    :param y2: the third coefficient for HMAC method
+    :return: 1: accept 0:reject
+    '''
     alpha = 2
     result = np.dot(Ri, Rq)
     expected = y0 + y1 * alpha + y2 * alpha * alpha
@@ -85,6 +142,13 @@ def verify_correctness(Ri, Rq, y0, y1, y2):
 
 
 def verify(VO, Rq):
+    '''
+    The verifition method
+    :param VO: the verifiable object set
+    :param Rq: the verifiable tags of query
+
+    :return: the verification results of correctness
+    '''
     ri = Cmap[key]
     flag = verify_correctness(ri, Rq, VO[0], VO[1], VO[2])
     return flag
