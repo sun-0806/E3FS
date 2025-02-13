@@ -25,6 +25,13 @@ def hash_to_binary(input_string, length):
 
 
 def ASPE(BF, sk, isIndex):
+    '''
+    ASPE method
+    :param BF: Bloom filter
+    :param sk: ASPE keys
+    :param isIndex: index or query? index:1 query:0
+    :return: the encrypted bloom filter
+    '''
     a = len(BF)
     I_1, I_2 = np.zeros(a), np.zeros(a)
     Q_1, Q_2 = np.zeros(a), np.zeros(a)
@@ -57,6 +64,12 @@ def ASPE(BF, sk, isIndex):
 
 
 def HMAC(EBF, sk_hmac):
+     '''
+    HMAC method
+    :param EBF: the encrypted bloom filter
+    :param sk_hmac: HMAC key
+    :return: authenticated bloom filter and verifiable tags
+    '''
     Tag_0 = EBF
     EBF_copy = np.asarray(EBF).ravel()
     Tag_1 = []
