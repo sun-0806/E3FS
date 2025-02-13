@@ -24,6 +24,13 @@ def hash_to_binary(input_string, length):
 
 
 def ASPE(BF, sk, isIndex):
+    '''
+    ASPE method
+    :param BF: Bloom filter
+    :param sk: ASPE keys
+    :param isIndex: index or query? index: 1 query:0
+    :return: encrypted bloom filter
+    '''
     a = len(BF)
     I_1, I_2 = np.zeros(a), np.zeros(a)
     Q_1, Q_2 = np.zeros(a), np.zeros(a)
