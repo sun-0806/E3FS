@@ -7,20 +7,13 @@ import sys
 import numpy as np
 
 
-class Node():
-    def __init__(self, value, acc):
-        self._value = value
-        self._left = None
-        self._right = None
-        self._isleaf = False
-        self._id = None
-        self._X = []
-        self._ciphertext = ''
-        self._acc = acc
-        self._hash = b''
-
 
 def HMAC_keys(hash_count):
+    '''
+    PRF Key Generation.
+    :param hash_count: the number of hash functions
+    :return: PRF keys
+    '''
     K = []
     for i in range(hash_count):
         K.append(secrets.token_hex(16).encode())
@@ -28,14 +21,27 @@ def HMAC_keys(hash_count):
 
 
 class BF_plain:
+    '''
+    Definition of Bloom Filter.
+    '''
 
     def __init__(self, hash_count, m):
+        '''
+        Initialize Bloom filter
+        :param hash_count: the number of hash functions
+        :param m: The length of Bloom Filter
+        '''
         self._size = m
         self._hash_count = hash_count
         self.bit_array = np.zeros(m, dtype=int)
         self.one = 0
 
     def insert(self, obj, K):
+        '''
+        The insertion of Bloom filter
+        :param obj: Insert Object
+        :param K: PRF keys
+        '''
         for i in range(self._hash_count):
             a = hmac.new(K[i], obj.encode(), digestmod=hashlib.sha1).hexdigest()
             hash_value = int(a, 16) % math.ceil(self.size)
@@ -49,6 +55,18 @@ class BF_plain:
 
 
 def file_to_BF(P, gram_dict, Num_Hmac, BF_len, file_num, dic_size, dictionary, K):
+    '''
+    Process the file set, generate the Bloom filter index and the inverted index of the files.
+    :param P: TF-IDF matrix representation of file list
+    :param gram_dict: the unigram dictionary of keywords
+    :param Num_Hmac: the number of hash functions
+    :param BF_len: the length of Bloom Filter
+    :param file_num: the number of files
+    :param dic_size: the number of keywords
+    :param dictionary: the keyword set
+    :param K: PRF keys
+    :return: Bloom filter list, inverted index list
+    '''
     BFs = []
     inv_keyword = {keyword: [] for keyword in dictionary}
     for i in range(file_num):
@@ -63,6 +81,14 @@ def file_to_BF(P, gram_dict, Num_Hmac, BF_len, file_num, dic_size, dictionary, K
 
 
 def query_to_BF(Qv, Num_Hmac, BF_len, K):
+    '''
+    Process the query, generate the Bloom filter for the query.
+    :param Qv: the unigram dictionary of the query
+    :param Num_Hmac: the number of hash functions
+    :param BF_len: the length of Bloom Filter
+    :param K: PRF keys
+    :return: the Bloom filter of the query
+    '''
     BF = BF_plain(Num_Hmac, BF_len)  #
     for i in range(len(Qv)):
         BF.insert(Qv[i], K)
@@ -70,6 +96,12 @@ def query_to_BF(Qv, Num_Hmac, BF_len, K):
 
 
 def add_BFs(cnode, m):
+    '''
+    Merge child nodes
+    :param cnode: node set
+    :param m: the length of Bloom Filter
+    :return: The Bloom filter after merging nodes
+    '''
     parentBF = [0 for _ in range(m)]
     for j in range(m):
         for i in range(len(cnode)):
@@ -78,6 +110,11 @@ def add_BFs(cnode, m):
 
 
 def auth_leaf(node):
+    '''
+    Authentication leaf node
+    :param node: node
+    :return: the hash of authentication leaf node
+    '''
     a = ''
     a = a + str(node.id) + str(node.pi) + str(node.Authvalue)
     hash = hashlib.sha1(a.encode('utf8')).hexdigest()
@@ -85,6 +122,11 @@ def auth_leaf(node):
 
 
 def auth_nonleaf(node):
+    '''
+    Authentication nonleaf node
+    :param node: node
+    :return: the hash of authentication nonleaf node
+    '''
     a = '' + str(node.Authvalue)
     for cnode in node.children:
         a = a + str(cnode._H)
