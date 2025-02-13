@@ -119,7 +119,7 @@ def search(sco, node, trap):
 def is_match(BF, trap1, sco):
     '''
     Inner product matching strategy
-    :param BF: the vectors that need to be matched
+    :param BF: the vectors that need to be tested
     :param trap1: the trapdoor vector
     :param sco: the threshold
     :return: -1:match 0:mismatch
@@ -251,7 +251,7 @@ def verify(VO, Rq, node, tau):
     :param Rq: the verifiable tags of query
     :param node: current node to be verified
     :param tau: the key to obtain the hash of current node in Bmap
-    :return: the verification results of correctness and integrity
+    :return: the verification results of correctness and completeness
     '''
     flag_complete = []
     flag_correct = []
