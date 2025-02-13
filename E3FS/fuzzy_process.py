@@ -13,6 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 def Read_file(file_dir):
+    '''
+    read file
+    :param file_dir: Dataset address
+    :return: file list and the hash list of the files
+    '''
     file_list = []
     file_hash_list = []
     for root, dirs, files in os.walk(file_dir):
@@ -42,6 +47,9 @@ def hash_file(filename, hash_algorithm='sha1'):
 
 
 def Preprocess(file_list):
+    '''
+    Preprocess the file set
+    '''
     Flist = []
     lemmatizer = WordNetLemmatizer()
     stemmer = PorterStemmer()
@@ -61,6 +69,12 @@ def Preprocess(file_list):
 
 
 def Vect_files(file_list, length):
+    '''
+    Convert a list of files into TF-IDF vector representation.
+    :param file_list: file list
+    :param length: maximum number of features (words) to consider in the TF-IDF vector.
+    :return: keyword set and TF-IDF matrix representation of file list.
+    '''
     tfidf = TfidfVectorizer(max_df=0.2, min_df=0.001, max_features=length, stop_words="english")
     X_tfidf = tfidf.fit_transform(file_list)
     dictionary = tfidf.get_feature_names()
@@ -75,6 +89,11 @@ def Keyword_Min_Max(X_tfidf):
 
 
 def unigram(word):
+    '''
+    Generate unigram vector
+    :param word: keyword
+    :return: unigram vector
+    '''
     vector = np.zeros(300)
     for i in range(len(word)):
         if 'a' <= word[i] <= 'z':
@@ -87,6 +106,11 @@ def unigram(word):
 
 
 def bigram(word):
+    '''
+    Generate bigram vector
+    :param word: keyword
+    :return: bigram vector
+    '''
     vector = np.zeros(26 * 26)
     for i in range(len(word) - 1):
         site1 = ord(word[i]) - ord('a')
@@ -96,6 +120,11 @@ def bigram(word):
 
 
 def threegram(word):
+    '''
+    Generate threegram vector
+    :param word: keyword
+    :return: threegram vector
+    '''
     vector = np.zeros(26 * 26 * 26)
     for i in range(len(word) - 2):
         site1 = ord(word[i]) - ord('a')
@@ -106,6 +135,12 @@ def threegram(word):
 
 
 def genPara(n, r):
+    '''
+    Generate the parameters for p-stable LSH
+    :param n: The dimensionality of the input data
+    :param r: The bucket width parameter
+    :return: the parameters for p-stable LSH
+    '''
     a = []
     for i in range(n):
         a.append(random.gauss(0, 1))
@@ -114,6 +149,13 @@ def genPara(n, r):
 
 
 def gen_e2LSH_family(n, k, r):
+    '''
+    Generate a family of LSH hash functions.
+    :param n: The dimensionality of the input vectors.
+    :param k: The number of hash functions in the family
+    :param r: The bucket width parameter for LSH
+    :return: the LSH family
+    '''
     result = []
     for i in range(k):
         result.append(genPara(n, r))
@@ -121,6 +163,13 @@ def gen_e2LSH_family(n, k, r):
 
 
 def gen_HashVals(e2LSH_family, v, r):
+    '''
+    Compute the LSH hash value for a given vector using a family of E2LSH functions.
+    :param e2LSH_family: the LSH family
+    :param v: The input vector to be hashed
+    :param r: The bucket width parameter.
+    :return: The concatenated hash values from all hash functions in the family.
+    '''
     hashVals = ''
     for hab in e2LSH_family:
         hashVal = str(int((np.inner(hab[0], v) + hab[1]) // r) + r)
@@ -129,6 +178,13 @@ def gen_HashVals(e2LSH_family, v, r):
 
 
 def uniGram_dictionary(e2LSH_family, dictionary, r):
+    '''
+    Generate a unigram dictionary with hash values using E2LSH.
+    :param e2LSH_family: the LSH family
+    :param dictionary: keyword set
+    :param r: The bucket width parameter
+    :return: A list containing the hashed representations of each word in the dictionary.
+    '''
     gram_dict = []
     for word in dictionary:
         vector = unigram(word)
