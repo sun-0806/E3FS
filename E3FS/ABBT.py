@@ -9,6 +9,9 @@ Bmap = {}
 
 
 class Node:
+    '''
+    The node definition of ABMT
+    '''
     def __init__(self, BFvalue):
         self._id = None
         self.children = None
@@ -23,6 +26,9 @@ class Node:
 
 
 class ENode:
+    '''
+    The definition of encrypted ABMT
+    '''
     def __init__(self, Authvalue):
         self._id = None
         self.children = None
@@ -73,6 +79,13 @@ def hash_to_binary(input_string, length):
 
 
 def ASPE(BF, sk, isIndex):
+    '''
+    ASPE method
+    :param BF: Bloom filter
+    :param sk: ASPE keys
+    :param isIndex: index or query?
+    :return: encrypted bloom filter
+    '''
     a = len(BF)
     I_1, I_2 = np.zeros(a), np.zeros(a)
     Q_1, Q_2 = np.zeros(a), np.zeros(a)
@@ -103,6 +116,12 @@ def ASPE(BF, sk, isIndex):
 
 
 def NHMAC(EBF, sk_hmac):
+    '''
+    HMAC method
+    :param EBF: encrypted bloom filter
+    :param sk_hmac: HMAC key
+    :return: authenticated bloom filter and verifiable tags
+    '''
     Tag_0 = EBF
     EBF_copy = np.asarray(EBF).ravel()
     Tag_1 = []
@@ -120,6 +139,20 @@ def NHMAC(EBF, sk_hmac):
 
 
 def ABTree(nodes, size, BFs, file_hash, threshold, sk, k1, sk_hmac, Tag_BF, n):
+    '''
+    ABMT construction method
+    :param nodes: inverted index of keywords
+    :param size: the length of the inverted index
+    :param BFs:
+    :param file_hash:
+    :param threshold: the length of Bloom filter
+    :param sk: ASPE keys
+    :param k1: PRF key
+    :param sk_hmac: HMAC key
+    :param Tag_BF: authenticated bloom filter and verifiable tags
+    :param n: the branching factor of A-BMT
+    :return: the node and encryted form node of A-BMT
+    '''
     if size == 0:
         return None
     if size == 1:
