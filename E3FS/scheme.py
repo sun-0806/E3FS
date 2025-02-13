@@ -12,7 +12,9 @@ from fuzzy_process import Read_file, Preprocess, Vect_files, gen_e2LSH_family, u
 from Genkey import Keygen
 from BF_process import file_to_BF, query_to_BF, HMAC_keys, Vauth_nonleaf, Vauth_leaf
 
-
+'''
+Including key generation, index and trapdoor construction, search and verification protocol parts
+'''
 
 class Node:
     def __init__(self, Authvalue):
@@ -26,6 +28,23 @@ class Node:
 
 
 def indexGen(P, gram_dict, m, file_num, FHlist, dic_size, dictionary, sk, k1, k2, branch, K, Num_Hmac):
+    '''
+    The index generation method
+    :param P: TF-IDF matrix representation of file list
+    :param gram_dict: the unigram dictionary of keywords
+    :param m: the length of Bloom Filter
+    :param file_num: the number of files
+    :param FHlist: the hash list of the files
+    :param dic_size: the number of keywords
+    :param dictionary: the keyword set
+    :param sk: ASPE keys
+    :param k1: PRF key
+    :param k2: PRF key
+    :param branch: the branching factor of A-BMT
+    :param K: PRF keys
+    :param Num_Hmac: the number of hash functions
+    :return: Omap and Tmap
+    '''
     Omap = {}
     Tmap = {}
     BFs, inv_keyword = file_to_BF(P, gram_dict, Num_Hmac, m, file_num, dic_size, dictionary, K)
@@ -46,6 +65,18 @@ def indexGen(P, gram_dict, m, file_num, FHlist, dic_size, dictionary, sk, k1, k2
 
 
 def GenTrap(Qv, sk, Omap, BF_len, k1, k2, Num_Hmac, K):
+    '''
+    The trapdoor generation method
+    :param Qv: the unigram dictionary of the query
+    :param sk: ASPE keys
+    :param Omap: Omap
+    :param BF_len: the length of Bloom Filter
+    :param k1: PRF key
+    :param k2: PRF key
+    :param Num_Hmac: the number of hash functions
+    :param K: PRF keys
+    :return: the trapdoors, threshold, verifiable tags, and update times for one keyword
+    '''
     trapdoors = {}
     rq = {}
     update_times = Omap[str(Qv[0])]
@@ -72,6 +103,13 @@ def GenTrap(Qv, sk, Omap, BF_len, k1, k2, Num_Hmac, K):
 
 
 def search(sco, node, trap):
+    '''
+    The search method
+    :param sco: the threshold
+    :param node: current node to search
+    :param trap: the trapdoor
+    :return: result set and verifiable object set
+    '''
     R_i, VO_i = [], {}
     root = Tmap[trap[0]]
     search_tree(root, trap[1], trap[2], R_i, VO_i, sco, node)
@@ -79,6 +117,13 @@ def search(sco, node, trap):
 
 
 def is_match(BF, trap1, sco):
+    '''
+    Inner product matching strategy
+    :param BF: the vectors that need to be matched
+    :param trap1: the trapdoor vector
+    :param sco: the threshold
+    :return: -1:match 0:mismatch
+    '''
     sco1 = np.inner(BF, trap1)
     sco1 = np.array(sco1).flatten()[0]
     if math.fabs(sco - sco1) <= 0.1:
@@ -87,6 +132,14 @@ def is_match(BF, trap1, sco):
 
 
 def tag_compute(BF, sigma_D, trap1, trap2):
+     '''
+    The HMAC.Eval method
+    :param BF: index vector
+    :param sigma_D: authenticated index vector
+    :param trap1: query vector
+    :param trap2: authenticated query vector
+    :return: verifiable tags
+    '''
     if isinstance(BF, np.matrix):
         BF = np.array(BF).flatten()
     if isinstance(sigma_D, np.matrix):
@@ -101,6 +154,16 @@ def tag_compute(BF, sigma_D, trap1, trap2):
 
 
 def search_tree(root, trap1, trap2, R_i, VO_i, sco, node):
+    '''
+    Perform the search algorithm on A-BMT
+    :param root: the root node of current A-BMT
+    :param trap1: query vector
+    :param trap2: authenticated query vector
+    :param R_i: the result set
+    :param VO_i: the verifiable object set
+    :param sco: the threshold
+    :param node: The copy node of the current node
+    '''
     EBF = root.Authvalue[0]
     sigma_D = root.Authvalue[1]
     flag, y0 = is_match(EBF, trap1, sco)
@@ -137,6 +200,10 @@ def search_tree(root, trap1, trap2, R_i, VO_i, sco, node):
 
 
 def verify_complete(node):
+     '''
+    Verify whether the search results are complete.
+    :param node: current node to be verified
+    '''
     if node.children != None:
         for node_i in node.children:
             verify_complete(node_i)
@@ -148,6 +215,15 @@ def verify_complete(node):
 
 
 def verify_correctness(Ri, Rq, y0, y1, y2):
+     '''
+    Verify whether the current result is correctness baesd on HMAC.Ver
+    :param Ri: the verifiable tags of index
+    :param Rq: the verifiable tags of query
+    :param y0: the first coefficient for HMAC method
+    :param y1: the second coefficient for HMAC method
+    :param y2: the third coefficient for HMAC method
+    :return: 1: accept 0:reject
+    '''
     alpha = 2
     result = np.dot(Ri, Rq)
     expected = y0 + y1 * alpha + y2 * alpha * alpha
@@ -169,6 +245,14 @@ def to_verify_with_blockchain(hash1, hash2):
 
 
 def verify(VO, Rq, node, tau):
+    '''
+    The verifition method
+    :param VO: the verifiable object set
+    :param Rq: the verifiable tags of query
+    :param node: current node to be verified
+    :param tau: the key to obtain the hash of current node in Bmap
+    :return: the verification results of correctness and integrity
+    '''
     flag_complete = []
     flag_correct = []
     for key1 in VO:
