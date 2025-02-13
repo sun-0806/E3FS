@@ -52,7 +52,7 @@ class BF_plain:
 
 def file_to_BF(P, gram_dict, BF_len, file_num, dic_size, K, Num_HMAC):
     '''
-    Process the file set, generate the Bloom filter index and the inverted index of the files.
+    Process the file set, generate the Bloom filter index of the files.
     :param P: TF-IDF matrix representation of file list
     :param gram_dict: the unigram dictionary of keywords
     :param Num_Hmac: the number of hash functions
