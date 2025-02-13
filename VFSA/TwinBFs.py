@@ -5,8 +5,12 @@ import math
 import numpy as np
 import os
 
+'''Generate Bloom filter, build authenticatied index tree, generate trap door'''
 
 class Node():
+    '''
+    Definition of index tree nodes
+    '''
     def __init__(self, value, acc):
         self._value = value
         self._left = None
@@ -21,6 +25,11 @@ class Node():
 
 
 def HMAC_keys(hash_count):
+    '''
+    PRF Key Generation.
+    :param hash_count: the number of hash functions
+    :return: PRF keys
+    '''
     K = []
     for i in range(hash_count):
         K.append(secrets.token_hex(16).encode())  
@@ -28,7 +37,9 @@ def HMAC_keys(hash_count):
 
 
 class TwinBF():
-
+    '''
+    Definition of the data structure Twin Bloom Filter
+    '''
     def __init__(self, hash_count, m):  
         self._size = m
         self._bit_size = math.ceil(hash_count * self._size)  
@@ -58,6 +69,9 @@ class TwinBF():
 
 
 def file_to_BF(P, S_set, Num_HMAC, threshold, K, file_num, dic_size):
+    '''
+    Process the file set, generate the Twin Bloom filter index of the files.
+    '''
     BFs = []
     T_set = []
     for i in range(file_num):
@@ -74,6 +88,9 @@ def file_to_BF(P, S_set, Num_HMAC, threshold, K, file_num, dic_size):
 
 
 def add_twoBFs(BF1, BF2, m, Num_HMAC, K):
+    '''
+    Merge two nodes and return the twin Bloom filter after merging nodes
+    '''
     parentBF = TwinBF(Num_HMAC, m)  
     for i in range(parentBF._bit_size):
         b = hmac.new(K[-1], str(i).encode(), digestmod=hashlib.sha1).hexdigest()
@@ -85,6 +102,9 @@ def add_twoBFs(BF1, BF2, m, Num_HMAC, K):
 
 
 def auth_leaf(node):
+    '''
+    Authentication leaf node and return the hash of authentication leaf node
+    '''
     a = ''
     for item in node._value._Twins:
         a = a + str(item[0]) + str(item[1])
@@ -95,6 +115,9 @@ def auth_leaf(node):
 
 
 def auth_nonleaf(node):
+     '''
+    Authentication nonleaf node and return the hash of authentication nonleaf node
+    '''
     a = ''
     for item in node._value._Twins:
         a = a + str(item[0]) + str(item[1])
